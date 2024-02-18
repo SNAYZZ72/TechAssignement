@@ -4,17 +4,17 @@ from .models import Image
 from PIL import Image as PilImage
 from io import BytesIO
 
-# Define a list of RGB tuples representing "happy" colors
+# Define a list of RGB tuples representing "happy" colors (using
+# https://www.color-meanings.com/happy-colors-boost-mood/)
 HAPPY_COLORS = [
     (255, 255, 0),  # Yellow
     (255, 192, 203),  # Pink
-    (0, 255, 0),  # Green
-    (0, 191, 255),  # Blue
     (255, 0, 0),  # Red
     (255, 165, 0),  # Orange
-    (128, 0, 128),  # Purple
+    (173, 216, 230),  # Blue
+    (192, 192, 192),  # Silver
+    (255, 215, 0),  # Gold
     (255, 255, 255),  # White
-    (0, 0, 0),  # Black
 ]
 
 # Color tolerance threshold for considering a color as "happy"
@@ -63,7 +63,8 @@ class ImageForm(forms.ModelForm):
         total_pixels = width * height
         happy_percentage = happy_color_count / total_pixels
         if happy_percentage < 0.5:
-            raise forms.ValidationError(f"Insufficient 'happy' colors: {happy_percentage:.2%} of the image.")
+            raise forms.ValidationError(f"Insufficient 'happy' colors: {happy_percentage: .2%} a minimum of 50 "
+                                        f"percent is required .")
 
         image_file.seek(0)
         image.file = image_file
