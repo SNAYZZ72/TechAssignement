@@ -44,10 +44,6 @@ coverage.xml
 #images
 images/
 
-#idea
-.idea/
-
-
 
 # IDEs
 .idea/

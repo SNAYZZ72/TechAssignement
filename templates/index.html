@@ -1,47 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Upload</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
+        body {
+            padding-top: 56px; /* Adjusted for fixed top navbar */
+        }
         .container {
-            margin-top: 100px;
+            margin-top: 20px;
+        }
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .btn {
+            border: 2px solid gray;
+            color: gray;
+            background-color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .img-thumbnail {
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">Image Upload</a>
         </div>
     </nav>
     <div class="container">
+        <div class="py-5 text-center">
+            <h2>Upload your image</h2>
+            <p class="lead">Select an image file to upload. Only images within a circle and with happy colors are accepted.</p>
+        </div>
         <form action="." method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="upload-btn-wrapper">
+                {% comment %}<button class="btn">Choose a file</button>{% endcomment %}
+                {{ form.file }}
+            </div>
             {{form.as_p}}
-            <button type="submit" class="btn btn-lg btn-success">Upload</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Upload</button>
         </form>
-
+        
         {% if obj %}
-        <h3>Succesfully uploaded : {{img_obj.caption}}</h3>
-        <img src="{{ obj.image.url}}" alt="image" class="img-thumbnail" >
+        <div class="alert alert-success" role="alert">
+            Successfully uploaded: {{img_obj.caption}}
+        </div>
+        <img src="{{ obj.image.url}}" alt="image" class="img-fluid img-thumbnail">
         {% endif %}
         <hr>
-
+        
         {% for x in image %}
-        {% if forloop.first %}<div class="row ">{% endif %}
-            <div class="col-lg-4 col-md-4 col-12" >
-        <div class="text-center mt-2">
-            <img src="{{x.image.url}}" height="70%" width="70%" class="img-thumbnail" alt="...">
-            <h2 class="text-center" >{{x.caption}}</h2></div>
-        </div>
-        {% if forloop.counter|divisibleby:3 %}
-        </div>
-        <div class=row>{% endif %}
+        {% if forloop.first %}<div class="row">{% endif %}
+            <div class="col-md-4">
+                <div class="text-center mt-3">
+                    <img src="{{x.image.url}}" class="img-fluid img-thumbnail" alt="...">
+                    <h3>{{x.caption}}</h3>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+            </div><div class="row">{% endif %}
             {% if forloop.last %}</div>{% endif %}
         {% endfor %}
-
     </div>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHj6SAw2dka7lH/ZcDTRt9qFhU0v6kpq2EUcv/9O5GmKsnbPbEHHj9C" crossorigin="anonymous"></script>
 </body>
+</html>
