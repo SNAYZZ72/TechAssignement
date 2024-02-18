@@ -38,6 +38,11 @@
         }
         .img-thumbnail {
             margin-top: 15px;
+            transition: transform 0.5s ease;
+            cursor: zoom-in;
+        }
+        .img-thumbnail:hover {
+            transform: scale(1.5);
         }
     </style>
 </head>
@@ -74,8 +79,18 @@
         {% if forloop.first %}<div class="row">{% endif %}
             <div class="col-md-4">
                 <div class="text-center mt-3">
-                    <img src="{{x.image.url}}" class="img-fluid img-thumbnail" alt="...">
-                    <h3>{{x.caption}}</h3>
+                    <img src="{{ x.image.url }}" class="img-fluid img-thumbnail zoomable-image" alt="...">
+                    <h3>{{ x.caption }}</h3>
+                    
+                    <form action="{% url 'edit_caption' x.id %}" method="get" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">Edit Caption</button>
+                    </form>
+                    
+                    <form action="." method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_image" value="{{ x.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
             </div>
             {% if forloop.counter|divisibleby:3 and not forloop.last %}

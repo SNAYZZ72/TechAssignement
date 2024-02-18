@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+from .views import index, edit_caption
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index, name='index'),
+    path('edit/<int:image_id>/', edit_caption, name='edit_caption'),
+
 ]
