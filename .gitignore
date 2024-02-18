@@ -46,4 +46,4 @@ images/
 
 
 # IDEs
-.idea/
+*.idea/
