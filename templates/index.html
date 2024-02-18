@@ -9,105 +9,166 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const images = document.querySelectorAll('.img-thumbnail');
-        
-        function resetImages() {
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.img-thumbnail');
+
+            function resetImages() {
+                images.forEach(image => {
+                    image.style.transform = 'scale(1)';
+                    image.style.zIndex = '';
+                    image.style.position = '';
+                });
+            }
+
             images.forEach(image => {
-                image.style.transform = 'scale(1)';
-                image.style.zIndex = '';
-                image.style.position = '';
-            });
-        }
-    
-        images.forEach(image => {
-            image.style.transition = 'transform 0.5s ease';
-            image.addEventListener('click', (event) => {
-                const isZoomed = event.currentTarget.style.transform === 'scale(1.5)';
-                resetImages(); // Reset all images before applying any new zoom
-    
-                if (!isZoomed) {
-                    event.currentTarget.style.transform = 'scale(1.5)';
-                    event.currentTarget.style.zIndex = '10';
-                    event.currentTarget.style.position = 'relative';
-                }
+                image.style.transition = 'transform 0.5s ease';
+                image.addEventListener('click', (event) => {
+                    const isZoomed = event.currentTarget.style.transform === 'scale(1.5)';
+                    resetImages(); // Reset all images before applying any new zoom
+
+                    if (!isZoomed) {
+                        event.currentTarget.style.transform = 'scale(1.5)';
+                        event.currentTarget.style.zIndex = '10';
+                        event.currentTarget.style.position = 'relative';
+                    }
+                });
             });
         });
-    });
+
+        function previewImage() {
+            const input = document.getElementById('image');
+            const preview = document.getElementById('previewImage');
+            const overlay = document.getElementById('circleOverlay');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                    overlay.style.display = 'block';
+                    rectangleOverlay.style.display = 'block';
+                    $('#imagePreviewModal').modal('show');
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.classList.add('d-none');
+                overlay.style.display = 'none';
+                rectangleOverlay.style.display = 'none';
+            }
+        }
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0056b3;">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/" style="color: #FFD700; /* Or */ font-weight: bold;">Badge Upload</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/" style="color: #FFFFFF;">Home</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container">
-        <header class="py-5 text-center bg-info text-white">
-            <h2>Upload Your Badge</h2>
-            <p class="lead">
-                Select an image file to upload. Only images within a circle and with happy colors are accepted.
-            </p>
-        </header>
-          <form action="." method="post" enctype="multipart/form-data" class="p-3 mb-2 bg-light text-dark border rounded">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="caption">Caption</label>
-                <input type="text" class="form-control {% if form.caption.errors %}is-invalid{% endif %}" id="caption" name="caption" required>
-                {% for error in form.caption.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="image">Image</label>
-                <input type="file" class="form-control-file {% if form.image.errors %}is-invalid{% endif %}" id="image" name="image" required>
-                {% for error in form.image.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Upload</button>
-        </form>
-        
-        {% if obj %}
-            <div class="alert alert-success" role="alert">
-                Successfully uploaded: {{ obj.caption }}
-                <a href="." class="btn btn-info" style="margin-top: 10px;">Upload Another Image</a>
-            </div>
-            <img src="{{ obj.image.url }}" alt="Uploaded Image" class="img-fluid img-thumbnail">
-        {% endif %}
-        <hr>
-        
-        <div class="row">
-            {% for x in image %}
-                <div class="col-md-4">
-                    <div class="text-center mt-3">
-                        <img src="{{ x.image.url }}" class="img-fluid img-thumbnail" alt="{{ x.caption }}">
-                        <h3>{{ x.caption }}</h3>
-                        <form action="{% url 'edit_caption' x.id %}" method="get" style="display: inline;">
-                            <button type="submit" class="btn btn-primary">Edit Caption</button>
-                        </form>
-                        <form action="." method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="delete_image" value="{{ x.id }}">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </div>
-                </div>
-                {% if forloop.counter|divisibleby:3 and not forloop.last %}
-                    </div><div class="row">
-                {% endif %}
-            {% endfor %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0056b3;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="color: #FFD700; /* Or */ font-weight: bold;">Badge Upload</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/" style="color: #FFFFFF;">Home</a>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
+<div class="container">
+    <header class="py-5 text-center bg-info text-white">
+        <h2>Upload Your Badge</h2>
+        <p class="lead">
+            Select an image file to upload. Only images within a circle and with happy colors are accepted.
+        </p>
+    </header>
+    <form action="." method="post" enctype="multipart/form-data" class="p-3 mb-2 bg-light text-dark border rounded">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="caption">Caption</label>
+            <input type="text" class="form-control {% if form.caption.errors %}is-invalid{% endif %}" id="caption"
+                   name="caption" required>
+            {% for error in form.caption.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="image">Image</label>
+            <input type="file" class="form-control-file {% if form.image.errors %}is-invalid{% endif %}" id="image"
+                   name="image" required onchange="previewImage();">
+            <img id="imagePreview" src="#" alt="Image preview" class="img-fluid img-thumbnail d-none"
+                 style="max-width: 200px; max-height: 200px;">
+            {% for error in form.image.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Upload</button>
+    </form>
+
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog" aria-labelledby="imagePreviewModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Image Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="#" alt="Image preview" class="img-fluid d-none"
+                         style="position: relative; max-width: 600px; max-height: 512px;">
+                    <div id="circleOverlay"
+                         style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid red; height: 512px; width: 512px; border-radius: 50%; box-sizing: border-box;"></div>
+                    <div id="rectangleOverlay"
+                         style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid blue; height: 512px; width: 512px; box-sizing: border-box;"></div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Red Circle</strong> - The image must fit within the circle. <br>
+                        <strong>Blue Rectangle</strong> - The image must fit within the rectangle.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {% if obj %}
+        <div class="alert alert-success" role="alert">
+            Successfully uploaded: {{ obj.caption }}
+            <a href="." class="btn btn-info" style="margin-top: 10px;">Upload Another Image</a>
+        </div>
+        <img src="{{ obj.image.url }}" alt="Uploaded Image" class="img-fluid img-thumbnail">
+    {% endif %}
+    <hr>
+
+    <div class="row">
+        {% for x in image %}
+            <div class="col-md-4">
+                <div class="text-center mt-3">
+                    <img src="{{ x.image.url }}" class="img-fluid img-thumbnail" alt="{{ x.caption }}">
+                    <h3>{{ x.caption }}</h3>
+                    <form action="{% url 'edit_caption' x.id %}" method="get" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">Edit Caption</button>
+                    </form>
+                    <form action="." method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_image" value="{{ x.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                </div>
+                <div class="row">
+            {% endif %}
+        {% endfor %}
+        </div>
+</div>
 </body>
 </html>
