@@ -3,6 +3,7 @@ from .form import ImageForm
 from .models import Image
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
 
 
 # Create your views here.
@@ -38,7 +39,10 @@ def edit_caption(request, image_id):
         form = ImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
             form.save()
+            messages.success(request, "Caption updated successfully.")
             return redirect('index')
+        else:
+            messages.error(request, "There was an error updating the caption.")
     else:
         form = ImageForm(instance=image)
     return render(request, 'edit_image.html', {'form': form})
