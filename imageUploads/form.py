@@ -37,9 +37,22 @@ except AttributeError:
     resample_filter = PilImage.ANTIALIAS
 
 
-def resize_and_convert_to_circle(image_pil):
-    """Resize image to 512x512 and convert to a circle with transparent background."""
-    image_pil = image_pil.resize((512, 512), resample_filter)
+# def resize_and_convert_to_circle(image_pil):
+#     """Resize image to 512x512 and convert to a circle with transparent background."""
+#     image_pil = image_pil.resize((512, 512), resample_filter)
+#     mask = PilImage.new('L', (512, 512), 0)
+#     PilImageDraw.Draw(mask).ellipse((0, 0, 512, 512), fill=255)
+#     result = PilImage.new('RGBA', (512, 512), (255, 255, 255, 0))
+#     result.paste(image_pil, (0, 0), mask)
+#     return result
+
+def resize(image_pil):
+    """Resize image to 512x512."""
+    return image_pil.resize((512, 512), resample_filter)
+
+
+def convert_to_circle(image_pil):
+    """Convert image to a circle with transparent background."""
     mask = PilImage.new('L', (512, 512), 0)
     PilImageDraw.Draw(mask).ellipse((0, 0, 512, 512), fill=255)
     result = PilImage.new('RGBA', (512, 512), (255, 255, 255, 0))
@@ -113,8 +126,10 @@ class ImageForm(forms.ModelForm):
 
         width, height = image_pil.size
         if width != 512 or height != 512:
-            image_pil = resize_and_convert_to_circle(image_pil)
+            image_pil = resize(image_pil)
+            # image_pil = resize_and_convert_to_circle(image_pil)
 
+        image_pil = convert_to_circle(image_pil)
         happy_color_count = count_happy_colors(image_pil.load(), 512, 512)
         happy_percentage = happy_color_count / (512 * 512)
 
@@ -132,6 +147,6 @@ class ImageForm(forms.ModelForm):
         image_pil.save(final_image_file, format='PNG')
         final_image_file.seek(0)
         image.file = final_image_file
-        image.name= f"{image.name.split('.')[0]}.png"
+        image.name = f"{image.name.split('.')[0]}.png"
 
         return image

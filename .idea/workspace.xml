@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="296855e5-8035-4a42-b482-0335447fb167" name="Changes" comment="vercel test 2">
-      <change afterPath="$PROJECT_DIR$/ImagesTest/happy_colors_2__1_-removebg-preview (1).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ImagesTest/happy_test__1_-removebg-preview (1).png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imageUploads/form.py" beforeDir="false" afterPath="$PROJECT_DIR$/imageUploads/form.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,6 +112,8 @@
       <option name="presentableId" value="Default" />
       <updated>1708268482465</updated>
       <workItem from="1708268515613" duration="5818000" />
+      <workItem from="1708418838701" duration="1333000" />
+      <workItem from="1708439148409" duration="3799000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
